@@ -1,0 +1,451 @@
+function varargout = filtrace(varargin)
+% FILTRACE MATLAB code for filtrace.fig
+%      FILTRACE, by itself, creates a new FILTRACE or raises the existing
+%      singleton*.
+%
+%      H = FILTRACE returns the handle to a new FILTRACE or the handle to
+%      the existing singleton*.
+%
+%      FILTRACE('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in FILTRACE.M with the given input arguments.
+%
+%      FILTRACE('Property','Value',...) creates a new FILTRACE or raises the
+%      existing singleton*.  Starting from the left, property value pairs are
+%      applied to the GUI before filtrace_OpeningFcn gets called.  An
+%      unrecognized property name or invalid value makes property application
+%      stop.  All inputs are passed to filtrace_OpeningFcn via varargin.
+%
+%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
+%      instance to run (singleton)".
+%
+% See also: GUIDE, GUIDATA, GUIHANDLES
+
+% Edit the above text to modify the response to help filtrace
+
+% Last Modified by GUIDE v2.5 27-May-2019 20:59:54
+
+% Begin initialization code - DO NOT EDIT
+gui_Singleton = 1;
+gui_State = struct('gui_Name',       mfilename, ...
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @filtrace_OpeningFcn, ...
+    'gui_OutputFcn',  @filtrace_OutputFcn, ...
+    'gui_LayoutFcn',  [] , ...
+    'gui_Callback',   []);
+if nargin && ischar(varargin{1})
+    gui_State.gui_Callback = str2func(varargin{1});
+end
+
+if nargout
+    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+else
+    gui_mainfcn(gui_State, varargin{:});
+end
+% End initialization code - DO NOT EDIT
+
+
+% --- Executes just before filtrace is made visible.
+function filtrace_OpeningFcn(hObject, eventdata, handles, varargin)
+% This function has no output args, see OutputFcn.
+% hObject    handle to figure
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% varargin   command line arguments to filtrace (see VARARGIN)
+if(isempty(varargin)~=1)
+    handles.pom=varargin{1};
+    refresh_filtrace(handles);
+end
+handles.filtr1=0;
+handles.filtr2=0;
+handles.dataout=handles.pom.data;
+% Choose default command line output for filtrace
+handles.output = hObject;
+
+% Update handles structure
+guidata(hObject, handles);
+
+% UIWAIT makes filtrace wait for user response (see UIRESUME)
+% uiwait(handles.figure1);
+
+
+% --- Outputs from this function are returned to the command line.
+function varargout = filtrace_OutputFcn(hObject, eventdata, handles)
+% varargout  cell array for returning output args (see VARARGOUT);
+% hObject    handle to figure
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Get default command line output from handles structure
+varargout{1} = handles.output;
+
+
+% --- Executes on selection change in vyber_1.
+function vyber_1_Callback(hObject, eventdata, handles)
+% hObject    handle to vyber_1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if(handles.vyber_1.Value==2 || handles.vyber_1.Value==3)
+handles.h_f.Enable='Off';
+handles.text_1.String='Mezní frekvence:';
+else
+    handles.h_f.Enable='On';
+handles.text_1.String='Spodní  mezní f.:';    
+end
+% Hints: contents = cellstr(get(hObject,'String')) returns vyber_1 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from vyber_1
+
+
+% --- Executes during object creation, after setting all properties.
+function vyber_1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to vyber_1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in vyber_2.
+function vyber_2_Callback(hObject, eventdata, handles)
+% hObject    handle to vyber_2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns vyber_2 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from vyber_2
+
+%% prvotní nastavení
+if(handles.vyber_2.Value==2 || handles.vyber_2.Value==3) 
+handles.h_f_2.Enable='Off';
+handles.text_2.String='Mezní frekvence:';
+else
+    handles.h_f_2.Enable='On';
+handles.text_2.String='Spodní  mezní f.:';    
+end
+
+% --- Executes during object creation, after setting all properties.
+function vyber_2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to vyber_2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in duplikace.
+function duplikace_Callback(hObject, eventdata, handles)
+% hObject    handle to duplikace (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of duplikace
+%% kontrola zapnutí prvkù pøi výbìru filtrace obou kanálù 
+if(handles.duplikace.Value==1)
+    handles.vyber_2.Enable='Off';
+    handles.s_f_2.Enable='Off';
+    handles.h_f_2.Enable='Off';
+    handles.rad_2.Enable='Off';
+else
+    handles.vyber_2.Enable='On';
+    handles.s_f_2.Enable='On';
+    handles.h_f_2.Enable='On';
+    handles.rad_2.Enable='On';
+end
+
+
+function s_f_Callback(hObject, eventdata, handles)
+% hObject    handle to s_f (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+% Hints: get(hObject,'String') returns contents of s_f as text
+%        str2double(get(hObject,'String')) returns contents of s_f as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function s_f_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to s_f (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function h_f_Callback(hObject, eventdata, handles)
+% hObject    handle to h_f (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of h_f as text
+%        str2double(get(hObject,'String')) returns contents of h_f as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function h_f_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to h_f (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function s_f_2_Callback(hObject, eventdata, handles)
+% hObject    handle to s_f_2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of s_f_2 as text
+%        str2double(get(hObject,'String')) returns contents of s_f_2 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function s_f_2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to s_f_2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function h_f_2_Callback(hObject, eventdata, handles)
+% hObject    handle to h_f_2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of h_f_2 as text
+%        str2double(get(hObject,'String')) returns contents of h_f_2 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function h_f_2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to h_f_2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in navrh_button.
+function navrh_button_Callback(hObject, eventdata, handles)
+
+%% navrh filtru ze zadaných parametrù
+f=0:floor((handles.pom.Fs)/2);
+filtr1=0;
+filtr2=0;
+%% podmínky pro spuštìní návrhu
+if(isempty(str2num(handles.s_f.String))||isempty(str2num(handles.h_f.String)))
+    warndlg('Parametry filtru prvního kanálu musí být èíslo.')
+    return
+end
+
+if(isempty(str2num(handles.rad_1.String))||isempty(str2num(handles.rad_2.String)))
+    warndlg('Parametry filtru prvního kanálu musí být èíslo.')
+    return
+end
+if(isempty(str2num(handles.s_f_2.String))||isempty(str2num(handles.h_f_2.String)))
+    warndlg('parametry filtru druhého kanálu musí být èíslo.')
+    return
+end
+
+if((handles.vyber_1.Value==4||handles.vyber_1.Value==5)&&(str2num(handles.s_f.String)>=str2num(handles.h_f.String)))
+    warndlg('Mezní frekvence filtru kanálu 1 pøi danném nastavení musí splòovat podmínku: Horní mezní frekvence je vìtší než dolní mezní frekvence.')
+    return
+end
+
+if((handles.vyber_2.Value==4||handles.vyber_2.Value==5)&&(str2num(handles.s_f_2.String)>=str2num(handles.h_f_2.String)))
+    warndlg('Mezní frekvence filtru kanálu 2 pøi danném nastavení musí splòovat podmínku: Horní mezní frekvence je vìtší než dolní mezní frekvence.')
+    return
+end
+
+if(str2num(handles.s_f_2.String)<1 || str2num(handles.h_f_2.String)<1 || str2num(handles.s_f.String)<1 ||str2num(handles.h_f.String)<1 || str2num(handles.rad_1.String)<1|| str2num(handles.rad_2.String)<1)
+    warndlg('Paramtery filtrù musí být kladná èísla.')
+    return
+end
+%% návrh filtrù
+rad_1=str2num(handles.rad_1.String);
+rad_2=str2num(handles.rad_2.String);
+if(handles.vyber_1.Value==2)
+    filtr1=fir1(rad_1,str2num(handles.s_f.String)/handles.pom.Fs*2,'low');
+elseif (handles.vyber_1.Value==3)
+    filtr1=fir1(rad_1,str2num(handles.s_f.String)/handles.pom.Fs*2,'high');
+elseif(handles.vyber_1.Value==4)
+    filtr1=fir1(rad_1,[str2num(handles.s_f.String)/handles.pom.Fs*2 str2num(handles.h_f.String)/handles.pom.Fs*2],'stop');
+    
+elseif(handles.vyber_1.Value==5)
+    filtr1=fir1(rad_1,[str2num(handles.s_f.String)/handles.pom.Fs*2 str2num(handles.h_f.String)/handles.pom.Fs*2],'bandpass');
+    
+end
+if(length(handles.pom.data(1,:))>1)
+    if(handles.vyber_2.Value==2 && handles.duplikace.Value==0)
+        filtr2=fir1(rad_2,str2num(handles.s_f_2.String)/handles.pom.Fs*2,'low');
+    elseif (handles.vyber_2.Value==3 && handles.duplikace.Value==0)
+        filtr2=fir1(rad_2,str2num(handles.s_f_2.String)/handles.pom.Fs*2,'high');
+    elseif(handles.vyber_2.Value==4 && handles.duplikace.Value==0)
+        filtr2=fir1(rad_2,[str2num(handles.s_f_2.String)/handles.pom.Fs*2 str2num(handles.h_f_2.String)/handles.pom.Fs*2],'stop');
+        
+    elseif(handles.vyber_2.Value==5 && handles.duplikace.Value==0)
+        filtr2=fir1(rad_2,[str2num(handles.s_f_2.String)/handles.pom.Fs*2 str2num(handles.h_f_2.String)/handles.pom.Fs*2],'bandpass');
+    end
+end
+%% vykreslení pøenosových char. filtrù
+axes(handles.graf_1);
+cla
+yyaxis left
+plot(f,spektrum(handles.pom.data(:,1),1,length(handles.pom.data(:,1)),length(f)));
+title('Spektrum kanálu 1.');
+xlabel('Frekvence [Hz]');
+ylabel('Amplituda [-]');
+
+if(handles.vyber_1.Value>1)
+    yyaxis right
+    charakteristika=abs(fft(filtr1,(length(f))*2+1));
+    charakteristika=charakteristika./max(charakteristika);
+    charakteristika(ceil(end/2):end)=[];
+    plot(f,charakteristika);
+    ylabel('Pøenos [-]');
+    hold off
+    if(handles.duplikace.Value==1)
+        filtr2=filtr1;
+    end
+end
+if(length(handles.pom.data(1,:))>1)
+    axes(handles.graf_2);
+    cla
+    yyaxis left
+    plot(f,spektrum(handles.pom.data(:,2),1,length(handles.pom.data(:,2)),length(f)));
+    title('Spektrum kanálu 2.');
+    xlabel('Frekvence [Hz]');
+    ylabel('Amplituda [-]');
+    
+    if(handles.vyber_2.Value>1 || length(filtr2)>1)
+        yyaxis right
+        charakteristika=abs(fft(filtr2,(length(f))*2+1));
+        charakteristika=charakteristika./max(charakteristika);
+        charakteristika(ceil(end/2):end)=[];
+        plot(f,charakteristika);
+        ylabel('Pøenos [-]');
+        hold off
+    end
+    
+    
+end
+%% export filtrù do sdílené struktury
+handles.filtr1=filtr1;
+handles.filtr2=filtr2;
+guidata(hObject, handles);
+
+% --- Executes on button press in filtrace_button.
+function filtrace_button_Callback(hObject, eventdata, handles)
+%% filtrace navrženými filtry
+if length(handles.filtr1)>1
+    handles.dataout(:,1)=conv(handles.pom.data(:,1),handles.filtr1,'same');
+end
+if length(handles.filtr2)>1
+    handles.dataout(:,2)=conv(handles.pom.data(:,2),handles.filtr1,'same');
+end
+
+handles.pom.data=handles.dataout; %% pøepis vstupních dat filtrovaných signálem
+refresh_filtrace(handles); %% refresh spekter
+if(length(handles.filtr1)<2 && length(handles.filtr2)<2)
+warndlg('Filtry nebyly navrženy, filtrace neprobìhla.')
+else
+  msgbox('Filtrace probìhla v poøádku.')  
+end
+guidata(hObject, handles);
+
+
+
+
+% --- Executes on button press in konec_button.
+function konec_button_Callback(hObject, eventdata, handles)
+% hObject    handle to konec_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%% ukonèení okna filtrace otevøení pùvodního okna gui s filtrovanými daty.
+close(filtrace);
+gui(handles);
+
+
+
+function rad_1_Callback(hObject, eventdata, handles)
+% hObject    handle to rad_1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of rad_1 as text
+%        str2double(get(hObject,'String')) returns contents of rad_1 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function rad_1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to rad_1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function rad_2_Callback(hObject, eventdata, handles)
+% hObject    handle to rad_2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of rad_2 as text
+%        str2double(get(hObject,'String')) returns contents of rad_2 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function rad_2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to rad_2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in zoom.
+function zoom_Callback(hObject, eventdata, handles)
+zoom on;
+
+
+% --- Executes on button press in pan.
+function pan_Callback(hObject, eventdata, handles)
+pan on;
+
